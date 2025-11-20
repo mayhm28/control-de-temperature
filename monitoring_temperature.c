@@ -1,6 +1,6 @@
 main(){
 	int seuil_min , seuil_max;
-	lire_config("config.txt",&seuil_min,&seuil_max,&consec); // fonction qui lit ses valeurs depuis le fichier config//
+	lire_config("config.txt",&seuil_min,&seuil_max,&consec); // fonction qui lit ces valeurs depuis le fichier config//
 	mesure journal[100];
 	int compteur=0;
 	printf("MONITORING DE TEMPERATURE \n");
@@ -12,7 +12,7 @@ main(){
 		mesure m;
 		m.temp= genererTemperature();// fonction qui genere une temperature entre 0 et 50 dune facon aleatoire//
 		date(m.date); //fonction pour obtenir la date/heure actuelle//
-		m.niv_alerte=verif_alerte(m.temp,seuil_min,seuil_max);//pour vérifier l'alerte :normal,dépassement léger niv1,dépassement modéré niv2,dépassement critique niv3			//
+		m.niv_alerte=verif_alerte(m.temp,seuil_min,seuil_max);//pour vÃ©rifier l'alerte :normal,dÃ©passement lÃ©ger niv1,dÃ©passement modÃ©rÃ© niv2,dÃ©passement critique niv3			//
 		if (m.niv_alerte !=0){
 			compteur++;
 		}else{
@@ -20,20 +20,21 @@ main(){
 		}	
 		//affichage//
 		if (compteur>=consec && m.niv_alerte !=0){
-			printf(" [%s] Temperature: %.2f°C ---- Alerte niveau : %d --- DECLENCHEMENT DE L'ALARME \n", m.date,m.temp,m.niv_alerte);
+			printf(" [%s] Temperature: %.2fÂ°C ---- Alerte niveau : %d --- DECLENCHEMENT DE L'ALARME \n", m.date,m.temp,m.niv_alerte);
 			
 		}else if(m.niv_alerte !=0) {
-			printf(" [%s] Temperature: %.2f°C ---- Alerte niveau : %d (consécutives=%d) --- alarme en attente \n", m.date,m.temp,m.niv_alerte,compteur);			
+			printf(" [%s] Temperature: %.2fÂ°C ---- Alerte niveau : %d (consÃ©cutives=%d) --- alarme en attente \n", m.date,m.temp,m.niv_alerte,compteur);			
 		}else{
-			printf("[%s] Temperature: %.2f°C --- Normal \n", m.date, m.temp);
+			printf("[%s] Temperature: %.2fÂ°C --- Normal \n", m.date, m.temp);
 		}
 		
 		journal[i]=m;
 		ecrire_journal(m);//fonction qui ecrit un enregistrement dans le fichier journaling//
 		
 	}	
-	generer_rapport(journal,5); //fonction qui fait le rapport des mesures et l enregistre dans un fichier rapport.txt//
+	generer_rapport(journal,10); //fonction qui fait le rapport des mesures et l enregistre dans un fichier rapport.txt//
 	return 0;
 	
 	
 }
+
