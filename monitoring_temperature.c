@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 main(){
-	int seuil_min , seuil_max;
+	int seuil_min , seuil_max, consec;
 	lire_config("config.txt",&seuil_min,&seuil_max,&consec); // fonction qui lit ces valeurs depuis le fichier config//
 	mesure journal[100];
 	int compteur=0;
@@ -40,6 +40,7 @@ main(){
 	
 	
 }
+
 
 
 
