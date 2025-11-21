@@ -1,0 +1,4 @@
+seuil_min=10
+seuil_max=35
+consec=2
+
