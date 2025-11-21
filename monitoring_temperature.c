@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+// structure de mesures //
+typedef struct {
+    float temp;
+    char date[100];
+    int niv_alerte;
+} mesure;
 // fonction qui lit ces valeurs depuis le fichier config//
 void lire_config(const char *fichier,float *min,float *max,int *consec){
 	FILE *f = fopen(fichier, "r");	
@@ -69,6 +75,7 @@ main(){
 	
 	
 }
+
 
 
 
