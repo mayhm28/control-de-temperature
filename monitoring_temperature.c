@@ -43,7 +43,7 @@ int verif_alerte(float x,float min,float max){
 	}
 }
 //fonction qui ecrit un enregistrement dans le fichier journaling//
-void ecrire_journal(m){
+//fonction qui fait le rapport des mesures et l enregistre dans un fichier rapport.txt//
 main(){
 	int seuil_min , seuil_max;
 	lire_config("config.txt",&seuil_min,&seuil_max,&consec); // fonction qui lit ces valeurs depuis le fichier config//
@@ -83,6 +83,7 @@ main(){
 	
 	
 }
+
 
 
 
