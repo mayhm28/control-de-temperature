@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 // structure de mesures //
 typedef struct {
     float temp;
