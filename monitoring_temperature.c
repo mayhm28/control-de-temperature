@@ -8,8 +8,14 @@ typedef struct {
     int niv_alerte;
 } mesure;
 // fonction qui lit ces valeurs depuis le fichier config//
-void lire_config(const char *fichier,float *min,float *max,int *consec){
-	FILE *f = fopen(fichier, "r");	
+int lire_config(const char *fichier,float *min,float *max,int *consec){
+	FILE *f = fopen(fichier, "r");
+	if f==NULL{
+        return -1;
+    }
+    fscanf(f,"%f%f%d",min,max,consec);
+    fclose(f);
+    return 0;
 }
 // fonction qui genere une temperature entre 0 et 50 dune facon aleatoire//
 float genererTemperature(){
@@ -36,6 +42,8 @@ int verif_alerte(float x,float min,float max){
 		return 3;
 	}
 }
+//fonction qui ecrit un enregistrement dans le fichier journaling//
+void ecrire_journal(m){
 main(){
 	int seuil_min , seuil_max;
 	lire_config("config.txt",&seuil_min,&seuil_max,&consec); // fonction qui lit ces valeurs depuis le fichier config//
@@ -75,6 +83,7 @@ main(){
 	
 	
 }
+
 
 
 
