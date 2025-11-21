@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 main(){
 	int seuil_min , seuil_max;
 	lire_config("config.txt",&seuil_min,&seuil_max,&consec); // fonction qui lit ces valeurs depuis le fichier config//
@@ -37,4 +40,5 @@ main(){
 	
 	
 }
+
 
