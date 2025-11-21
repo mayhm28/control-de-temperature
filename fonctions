@@ -1,45 +1,48 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 // structure de mesures //
 typedef struct {
-    float temp;
-    char date[100];
-    int niv_alerte;
+    float temp; // température mesurée
+    char date[100]; // date et heure
+    int niv_alerte; // 0 = normal, 1 = niv1, 2 = niv2, 3 = niv3
 } mesure;
 // fonction qui lit ces valeurs depuis le fichier config//
-int lire_config(const char *fichier,float *min,float *max,int *consec){
+int lire_config(const char *fichier,int *seuil_min,int *seuil_max,int *consec){
 	FILE *f = fopen(fichier, "r");
-	if f==NULL{
+	if f == NULL{
         return -1;
     }
-    fscanf(f,"%f%f%d",min,max,consec);
+    fscanf(f,"%d%d%d",seuil_min,seuil_max,consec);
     fclose(f);
     return 0;
 }
 // fonction qui genere une temperature entre 0 et 50 dune facon aleatoire//
 float genererTemperature(){
-    return (float)rand()/((float)RAND_MAX/50.0));
+    return (float)rand() / ((float)RAND_MAX/50.0);
 }
 //fonction pour obtenir la date/heure actuelle//
-void date(){
-    time_t now = time(NULL);      
-    printf("Date/Heure : %s", ctime(&now));  
+void date(char *date_str) {
+    time_t now = time(NULL);
+    strftime(date_str, 100, "%Y-%m-%d %H:%M:%S", localtime(&now));
 }
 //pour vérifier l'alerte :normal,dépassement léger niv1,dépassement modéré niv2,dépassement critique niv3//
-int verif_alerte(float x,float min,float max){
-	if (x>=min && x<=max){
-		return 0;
+int verif_alerte(float x,int seuil_min,int seuil_max){
+	if (x>=seuil_min && x<=seuil_max){
+		return 0; // normal
 	}
-	float d=x-max;
-	if (d>0 && d<5){
-		return 1;
+	float d;
+	if (x> seuil_max){
+		d=x-seuil_max;
+	}else{
+		d=seuil_min-x;
 	}
-	if (d>=5 && d<10){
-		return 2;
+		
+	if (d<5){
+		return 1; // dépassement léger niv1
+	}
+	if (d<10){
+		return 2; // dépassement modéré niv2
 	}
 	if(d>=10){
-		return 3;
+		return 3;  // dépassement critique niv3
 	}
 }
 //fonction qui ecrit un enregistrement dans le fichier journaling//
