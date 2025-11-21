@@ -8,7 +8,7 @@ main(){
 	int compteur=0;
 	printf("MONITORING DE TEMPERATURE \n");
 	int i;
-	for (i=0;i<=10;i++){
+	for (i=0;i<10;i++){
 		printf("Veuillez appuir sur entree pour generer la mesure %d :\n ", i+1);
 		getchar();
 		
@@ -40,5 +40,6 @@ main(){
 	
 	
 }
+
 
 
