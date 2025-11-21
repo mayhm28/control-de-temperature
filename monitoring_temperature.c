@@ -1,6 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+// fonction qui lit ces valeurs depuis le fichier config//
+void lire_config(const char *fichier,float *min,float *max,int *consec){
+	FILE *f = fopen(fichier, "r");	
+}
+// fonction qui genere une temperature entre 0 et 50 dune facon aleatoire//
+float genererTemperature(){
+    return (float)rand()/((float)RAND_MAX/50.0));
+}
+//fonction pour obtenir la date/heure actuelle//
+void date(){
+    time_t now = time(NULL);      
+    printf("Date/Heure : %s", ctime(&now));  
+}
+//pour vérifier l'alerte :normal,dépassement léger niv1,dépassement modéré niv2,dépassement critique niv3//
+int verif_alerte(float x,float min,float max){
+	if (x>=min && x<=max){
+		return 0;
+	}
+	float d=x-max;
+	if (d>0 && d<5){
+		return 1;
+	}
+	if (d>=5 && d<10){
+		return 2;
+	}
+	if(d>=10){
+		return 3;
+	}
+}
 main(){
 	int seuil_min , seuil_max;
 	lire_config("config.txt",&seuil_min,&seuil_max,&consec); // fonction qui lit ces valeurs depuis le fichier config//
@@ -40,6 +69,7 @@ main(){
 	
 	
 }
+
 
 
 
