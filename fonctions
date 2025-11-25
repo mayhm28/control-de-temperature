@@ -45,7 +45,3 @@ int verif_alerte(float x,int seuil_min,int seuil_max){
 		return 3;  // dépassement critique niv3
 	}
 }
-//fonction qui ecrit un enregistrement dans le fichier journaling//
-//fonction qui fait le rapport des mesures et l enregistre dans un fichier rapport.txt//
-// fonction pour générer le nom (avec la date)
-// utiliser ce nom pour le rapport 
