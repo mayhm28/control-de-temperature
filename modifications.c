@@ -35,7 +35,6 @@ main(){
 			}
 		}while (choix!='n'&& choix!='N' && choix!='O'&& choix!='o');
 	}
-	printf(" \n Programme terminé. Rapport generé(%d mesures) .\n" ,i);
 	
 	char nom_fichier[100];
 	nom_fichier_rapport(nom_fichier);   // fonction pour générer le nom (avec la date)
@@ -43,5 +42,6 @@ main(){
 	printf(" \n Programme terminé. Rapport generé(%d mesures) .\n" ,i);
 	return 0;
 	
+
 
 
