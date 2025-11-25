@@ -1,0 +1,11 @@
+//fonction qui ecrit un enregistrement dans le fichier journaling//
+void ecrire_journal(mesure m ){
+	FILE *f=fopen("journal.txt","a");
+	if (f==NULL){
+		printf("il est impossible d'ouvrir le fichier");
+	}
+	else {
+		fprintf(f,"%s | %.2f | %d\n", m.date, m.temp, m.niv_alerte);
+		fclose(f);
+	}
+}
