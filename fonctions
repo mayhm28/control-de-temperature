@@ -5,14 +5,13 @@ typedef struct {
     int niv_alerte; // 0 = normal, 1 = niv1, 2 = niv2, 3 = niv3
 } mesure;
 // fonction qui lit ces valeurs depuis le fichier config//
-int lire_config(const char *fichier,int *seuil_min,int *seuil_max,int *consec){
+void lire_config(const char *fichier,int *seuil_min,int *seuil_max,int *consec){
 	FILE *f = fopen(fichier, "r");
 	if (f == NULL){
-        return -1;
+        printf("erreur");
     }
     fscanf(f,"%d%d%d",seuil_min,seuil_max,consec);
     fclose(f);
-    return 0;
 }
 // fonction qui genere une temperature entre 0 et 50 dune facon aleatoire//
 float genererTemperature(){
