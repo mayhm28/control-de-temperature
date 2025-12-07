@@ -32,3 +32,11 @@ void inorder(arbre* racine){
 	printf("[%s] Temperature: %.2f°C ---- Alerte niveau : %d ---\n",racine->val.date,racine->val.temp,racine->val.niv_alerte);
 	inorder(racine->droite);
 }
+void liberer(arbre* racine) {
+    if (racine == NULL){
+		return;
+	}
+    liberer(racine->gauche);
+    liberer(racine->droite);
+    free(racine);
+}
