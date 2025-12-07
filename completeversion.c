@@ -1,13 +1,70 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
 // structure de mesures //
 typedef struct {
-    float temp; // température mesurée
+    float temp; // tempÃ©rature mesurÃ©e
     char date[100]; // date et heure
     int niv_alerte; // 0 = normal, 1 = niv1, 2 = niv2, 3 = niv3
 } mesure;
+//structure de la file//
+typedef struct Noeud{
+	mesure m ;
+	struct Noeud* suiv;
+} Noeud ;
+typedef struct File{
+	Noeud *tete;
+	Noeud *queue;	
+}File;
+
+//enfiler//
+void enfiler (File* f, mesure m){
+	Noeud* newNode =(Noeud*)malloc(sizeof(Noeud));
+	newNode->m=m;
+	newNode->suiv=NULL;
+	if(f->queue){
+		f->queue->suiv=newNode;
+	}else{
+		f->tete=newNode;
+	}
+	f->queue = newNode;
+}
+
+//defiler//
+mesure defiler(File* f){
+	if (!f->tete){
+		printf("La file est vide !! \n");
+	}
+	Noeud* temp = f->tete;
+	f->tete = temp->suiv;
+	mesure m = temp->m;
+	if (!f->tete){
+		f->queue = NULL;
+	}
+	free(temp);
+	return m ;
+	
+}
+//traitement des alertes niv 3//
+
+void trait_alerte(File* f){
+	FILE *notif = fopen("notifications.txt" , "a");
+	if (!notif){
+		printf("ERREUR : IMPOSSIBLE d ouvrir notifications.txt \n");
+	}
+	fprintf(notif , "TRAITEMENT DES ALERTES CRITIQUES FIFO \n");
+	while(f->tete){
+		mesure m = defiler(f);
+		printf("[%s] temperature: %.2fÂ°C | Alerte Critique traitee \n" , m.date , m.temp);
+		fprintf(notif ,"[%s] temperature: %.2fÂ°C | Alerte Critique traitee \n" , m.date , m.temp);
+	}
+	fprintf(notif , "FIN \n");
+	fclose(notif);
+}
+
+
+
+
 // fonction qui lit ces valeurs depuis le fichier config//
 void lire_config(const char *fichier,int *seuil_min,int *seuil_max,int *consec){
 	FILE *f = fopen(fichier, "r");
@@ -26,7 +83,7 @@ void date(char *date_str) {
     time_t now = time(NULL);
     strftime(date_str, 100, "%Y-%m-%d %H:%M:%S", localtime(&now));
 }
-//pour vérifier l'alerte :normal,dépassement léger niv1,dépassement modéré niv2,dépassement critique niv3//
+//pour vÃ©rifier l'alerte :normal,dÃ©passement lÃ©ger niv1,dÃ©passement modÃ©rÃ© niv2,dÃ©passement critique niv3//
 int verif_alerte(float x,int seuil_min,int seuil_max){
 	if (x>=seuil_min && x<=seuil_max){
 		return 0; // normal
@@ -39,27 +96,27 @@ int verif_alerte(float x,int seuil_min,int seuil_max){
 	}
 		
 	if (d<5){
-		return 1; // dépassement léger niv1
+		return 1; // dÃ©passement lÃ©ger niv1
 	}
 	if (d<10){
-		return 2; // dépassement modéré niv2
+		return 2; // dÃ©passement modÃ©rÃ© niv2
 	}
 	if(d>=10){
-		return 3;  // dépassement critique niv3
+		return 3;  // dÃ©passement critique niv3
 	}
 }
 //affichage//
 void afficher_mesure(mesure m, int compteur, int consec) {
 	if (compteur>=consec && m.niv_alerte !=0){
-		printf(" [%s] Temperature: %.2f°C ---- Alerte niveau : %d --- DECLENCHEMENT DE L'ALARME \n", m.date,m.temp,m.niv_alerte);
+		printf(" [%s] Temperature: %.2fÂ°C ---- Alerte niveau : %d --- DECLENCHEMENT DE L'ALARME \n", m.date,m.temp,m.niv_alerte);
 			
 	}else if(m.niv_alerte !=0) {
-		printf(" [%s] Temperature: %.2f°C ---- Alerte niveau : %d (consécutives=%d) --- alarme en attente \n", m.date,m.temp,m.niv_alerte,compteur);			
+		printf(" [%s] Temperature: %.2fÂ°C ---- Alerte niveau : %d (consÃ©cutives=%d) --- alarme en attente \n", m.date,m.temp,m.niv_alerte,compteur);			
 	}else{
-		printf("[%s] Temperature: %.2f°C --- Normal \n", m.date, m.temp);
+		printf("[%s] Temperature: %.2fÂ°C --- Normal \n", m.date, m.temp);
 	}
 }
-//fonction pour générer le nom de fichier avec la date//
+//fonction pour gÃ©nÃ©rer le nom de fichier avec la date//
 void nom_fichier_rapport(char *nom_fichier) {
     char d[100];
     date(d);
@@ -70,7 +127,7 @@ void nom_fichier_rapport(char *nom_fichier) {
 void generer_rapport_liste(mesure journal[], int n, char *nom_fichier) {
     FILE *f = fopen(nom_fichier, "w");
     if (!f) {
-        printf("Impossible de créer %s\n", nom_fichier);
+        printf("Impossible de crÃ©er %s\n", nom_fichier);
         return;
     }
     float min = journal[0].temp;
@@ -96,12 +153,12 @@ void generer_rapport_liste(mesure journal[], int n, char *nom_fichier) {
             a3++;
         }
     }
-    fprintf(f, "\nTempérature minimale : %.2f°C\n", min);
-    fprintf(f, "Température maximale : %.2f°C\n", max);
-    fprintf(f, "Température moyenne : %.2f°C\n", somme / n);
+    fprintf(f, "\nTempÃ©rature minimale : %.2fÂ°C\n", min);
+    fprintf(f, "TempÃ©rature maximale : %.2fÂ°C\n", max);
+    fprintf(f, "TempÃ©rature moyenne : %.2fÂ°C\n", somme / n);
     fprintf(f, "Nombre d'alertes : niv1=%d, niv2=%d, niv3=%d\n", a1, a2, a3);
     fclose(f);
-    printf("Rapport généré dans %s\n", nom_fichier);
+    printf("Rapport gÃ©nÃ©rÃ© dans %s\n", nom_fichier);
 }
 //fonction qui ecrit un enregistrement dans le fichier journaling//
 void ecrire_journal(mesure m ){
@@ -122,15 +179,18 @@ int main(){
 	mesure journal[100];
 	int compteur=0;
 	int i=0;
+	File fileAlert = {NULL, NULL};
 	printf("MONITORING DE TEMPERATURE \n");
 	char choix='o';
 	printf("Appuyer sur ENTREE pour generer la premiere mesure \n");
 	getchar();
 	while (choix=='o' || choix == 'O'){
 		mesure m;
+		
+	
 		m.temp= genererTemperature();// fonction qui genere une temperature entre 0 et 50 dune facon aleatoire//
 		date(m.date); //fonction pour obtenir la date/heure actuelle//
-		m.niv_alerte=verif_alerte(m.temp,seuil_min,seuil_max);//pour vérifier l'alerte :normal,dépassement léger niv1,dépassement modéré niv2,dépassement critique niv3			//
+		m.niv_alerte=verif_alerte(m.temp,seuil_min,seuil_max);//pour vÃ©rifier l'alerte :normal,dÃ©passement lÃ©ger niv1,dÃ©passement modÃ©rÃ© niv2,dÃ©passement critique niv3			//
 		if (m.niv_alerte !=0){
 			compteur++;
 		}else{
@@ -139,6 +199,9 @@ int main(){
 		//affichage//
 		afficher_mesure(m, compteur, consec);
 		journal[i]=m;
+		if (m.niv_alerte ==3){
+			enfiler(&fileAlert, m);
+		}
 		ecrire_journal(m);//fonction qui ecrit un enregistrement dans le fichier journaling//
 		i++;
 		do {
@@ -152,8 +215,9 @@ int main(){
 	}
 	
 	char nom_fichier[100];
-	nom_fichier_rapport(nom_fichier);   // fonction pour générer le nom (avec la date)
+	nom_fichier_rapport(nom_fichier);   // fonction pour gÃ©nÃ©rer le nom (avec la date)
 	generer_rapport_liste(journal,i, nom_fichier); // utiliser ce nom pour le rapport 
-	printf(" \n Programme terminé. Rapport generé(%d mesures) .\n" ,i);
-	return 0;
+	trait_alerte(&fileAlert);
+	printf(" \n Programme terminÃ©. Rapport generÃ©(%d mesures) .\n" ,i);
+	return 0 ;
 }
