@@ -50,6 +50,73 @@ mesure defiler(File* f){
     return m;
 }
 
+//arbre
+typedef struct arbre{
+	mesure val;
+	struct arbre *gauche;
+	struct arbre *droite;
+} arbre;
+arbre* nouv_arbre(mesure m){
+	arbre* nouvar=(arbre*)malloc(sizeof(arbre));
+	nouvar->val=m;
+    nouvar->gauche=NULL;
+    nouvar->droite=NULL;
+    return nouvar;
+}
+arbre* inserer(arbre* racine,mesure m){
+    if (racine==NULL){
+        return nouv_arbre(m);
+    }
+    if (m.temp<racine->val.temp){
+        racine->gauche=inserer(racine->gauche,m);
+    } else if (m.temp>racine->val.temp) {
+        racine->droite=inserer(racine->droite,m);
+    }
+    return racine;
+}
+void inorder(arbre* racine){
+	if (racine==NULL){
+		return;
+	}
+	inorder(racine->gauche);
+	printf("[%s] Temperature: %.2f°C ---- Alerte niveau : %d ---\n",racine->val.date,racine->val.temp,racine->val.niv_alerte);
+	inorder(racine->droite);
+}
+arbre* min(arbre* racine) {
+    if (racine == NULL){
+    	return NULL;
+	}
+    arbre* temp = racine;
+    while (temp->gauche != NULL) {
+        temp = temp->gauche;
+    }
+    return temp;
+}
+
+arbre* max(arbre* racine) {
+    if (racine == NULL){
+    	return NULL;
+	}
+    arbre* temp = racine;
+    while (temp->droite != NULL) {
+        temp = temp->droite;
+    }
+    return temp;
+}
+float somme(arbre* racine) {
+    if (racine == NULL){
+    	return 0;
+	}
+    return racine->val.temp+somme(racine->gauche)+somme(racine->droite);
+}
+void liberer(arbre* racine) {
+    if (racine == NULL){
+	   return;
+	}
+    liberer(racine->gauche);
+    liberer(racine->droite);
+    free(racine);
+}
 //traitement des alertes niv 3//
 void trait_alerte(File* f){
     FILE *notif = fopen("notifications.txt", "a");
@@ -138,41 +205,60 @@ void nom_fichier_rapport(char *nom_fichier) {
     sprintf(nom_fichier, "rapport_%.10s.txt", d); // garde AAAA-MM-JJ
 }
 
-//le rapport
-void generer_rapport_liste(mesure journal[],int n,char *nom_fichier){
-    FILE *f = fopen(nom_fichier,"w");
+void compter_alertes(arbre* A, int* a1, int* a2, int* a3) {
+    if (!A){
+    	return;
+    }
+    compter_alertes(A->gauche, a1, a2, a3);
+    if (A->val.niv_alerte == 1){
+    	(*a1)++;
+	}
+    else if (A->val.niv_alerte == 2){
+    	(*a2)++;
+	}
+    else if (A->val.niv_alerte == 3){
+    	(*a3)++;
+	}
+    compter_alertes(A->droite, a1, a2, a3);
+}
 
+// Générer le rapport à partir de l'arbre
+void generer_rapport(mesure journal[], arbre* A, int n, char *nom_fichier) {
+    if (A == NULL || n == 0) {
+        printf("Aucune mesure. Rapport non généré.\n");
+        return;
+    }
+
+    FILE *f = fopen(nom_fichier,"w");
     if (!f) {
         printf("Impossible de créer %s\n", nom_fichier);
         return;
     }
 
-    float min = journal[0].temp;
-    float max = journal[0].temp;
-    float somme = 0;
-    int a1=0,a2=0,a3=0;
-
+    // 1?? Écrire les mesures dans l’ordre normal (pas triées)
     for (int i = 0; i < n; i++){
-        mesure m = journal[i];
-        fprintf(f,"%s | %.2f | %d\n", m.date, m.temp, m.niv_alerte);
-
-        if (m.temp < min) min = m.temp;
-        if (m.temp > max) max = m.temp;
-
-        somme += m.temp;
-
-        if (m.niv_alerte == 1) a1++;
-        else if (m.niv_alerte == 2) a2++;
-        else if (m.niv_alerte == 3) a3++;
+        fprintf(f,"%s | %.2f | %d\n",journal[i].date,journal[i].temp,journal[i].niv_alerte);
     }
 
-    fprintf(f,"\nTempérature minimale : %.2f°C\n", min);
-    fprintf(f,"Température maximale : %.2f°C\n", max);
-    fprintf(f,"Température moyenne : %.2f°C\n", somme/n);
-    fprintf(f,"Alertes : niv1=%d niv2=%d niv3=%d\n", a1,a2,a3);
+    fprintf(f, "\n");
+
+    float min_val = min(A)->val.temp;
+    float max_val = max(A)->val.temp;
+    float somme_val = somme(A);
+    float moyenne = somme_val / n;
+
+    int a1 = 0, a2 = 0, a3 = 0;
+    compter_alertes(A, &a1, &a2, &a3);
+
+    
+    fprintf(f, "Température minimale : %.2f°C\n", min_val);
+    fprintf(f, "Température maximale : %.2f°C\n", max_val);
+    fprintf(f, "Température moyenne : %.2f°C\n", moyenne);
+    fprintf(f, "Nombre d'alertes : niv1=%d niv2=%d niv3=%d\n", a1, a2, a3);
 
     fclose(f);
 }
+
 
 //fonction qui ecrit un enregistrement dans le fichier journaling//
 
@@ -183,53 +269,6 @@ void ecrire_journal(mesure m){
     }
     fprintf(f,"%s | %.2f | %d\n", m.date, m.temp, m.niv_alerte);
     fclose(f);
-}
-//structure arbre
-typedef struct arbre {
-    mesure val;
-    struct arbre *gauche;
-    struct arbre *droite;
-} arbre;
-
-// créer un nouveau nœud
-arbre* nouv_arbre(mesure m){
-    arbre* A = (arbre*)malloc(sizeof(arbre));
-    A->val = m;
-    A->gauche = NULL;
-    A->droite = NULL;
-    return A;
-}
-
-// insérer selon la température
-arbre* inserer(arbre* racine, mesure m){
-    if (racine == NULL) return nouv_arbre(m);
-
-    if (m.temp < racine->val.temp)
-        racine->gauche = inserer(racine->gauche, m);
-    else if (m.temp > racine->val.temp)
-        racine->droite = inserer(racine->droite, m);
-
-    return racine;
-}
-
-// affichage trié
-void inorder(arbre* racine){
-    if (racine == NULL){
-		return;
-	}
-    inorder(racine->gauche);
-    printf("[%s] Temperature: %.2f°C ---- Alerte niveau : %d\n",racine->val.date, racine->val.temp, racine->val.niv_alerte);
-    inorder(racine->droite);
-}
-
-// libérer
-void liberer(arbre* racine){
-    if (racine == NULL){
-		return;
-	}
-    liberer(racine->gauche);
-    liberer(racine->droite);
-    free(racine);
 }
 
 //programme principal
@@ -279,8 +318,7 @@ int main(){
 
     char nom_fichier[100];
     nom_fichier_rapport(nom_fichier);
-
-    generer_rapport_liste(journal, i, nom_fichier);
+    generer_rapport(journal,triTemp, i, nom_fichier);
     trait_alerte(&fileAlert);
 
     printf("\n--- MESURES TRIEES PAR TEMPERATURE ---\n");
