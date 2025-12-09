@@ -4,7 +4,7 @@
 #include <windows.h>
 // structure de mesures //
 typedef struct mesure {
-    float temp; // température mesurée
+    float temp; // tempÃ©rature mesurÃ©e
     char date[100]; // date et heure
     int niv_alerte; // 0 = normal, 1 = niv1, 2 = niv2, 3 = niv3
 } mesure;
@@ -59,7 +59,7 @@ void inorder(arbre* racine){
 		return;
 	}
 	inorder(racine->gauche);
-	printf("[%s] Temperature: %.2f°C ---- Alerte niveau : %d ---\n",racine->val.date,racine->val.temp,racine->val.niv_alerte);
+	printf("[%s] Temperature: %.2fÂ°C ---- Alerte niveau : %d ---\n",racine->val.date,racine->val.temp,racine->val.niv_alerte);
 	inorder(racine->droite);
 }
 /*recherche de la temp min*/
@@ -172,7 +172,7 @@ void date(char *date_str){
     time_t now = time(NULL);
     strftime(date_str, 100, "%Y-%m-%d %H:%M:%S", localtime(&now));
 }
-//pour vérifier l'alerte :normal,dépassement léger niv1,dépassement modéré niv2,dépassement critique niv3//
+//pour vÃ©rifier l'alerte :normal,dÃ©passement lÃ©ger niv1,dÃ©passement modÃ©rÃ© niv2,dÃ©passement critique niv3//
 
 int verif_alerte(float x,int seuil_min,int seuil_max){
     if (x >= seuil_min && x <= seuil_max){
@@ -186,27 +186,27 @@ int verif_alerte(float x,int seuil_min,int seuil_max){
     }
 
     if (d<5){
-		return 1; // dépassement léger niv1
+		return 1; // dÃ©passement lÃ©ger niv1
 	}
 	if (d<10){
-		return 2; // dépassement modéré niv2
+		return 2; // dÃ©passement modÃ©rÃ© niv2
 	}
 	if(d>=10){
-		return 3;  // dépassement critique niv3
+		return 3;  // dÃ©passement critique niv3
 	}
 }
 //affichage
 void afficher_mesure(mesure m, int compteur, int consec){
     if (compteur >= consec && m.niv_alerte != 0){
-        printf("[%s] Temperature: %.2f°C ---- Alerte niveau : %d --- DECLENCHEMENT DE L'ALARME\n",
+        printf("[%s] Temperature: %.2fÂ°C ---- Alerte niveau : %d --- DECLENCHEMENT DE L'ALARME\n",
                m.date, m.temp, m.niv_alerte);
     }
     else if (m.niv_alerte != 0){
-        printf("[%s] Temperature: %.2f°C ---- Alerte niveau : %d (consécutives=%d) --- alarme en attente\n",
+        printf("[%s] Temperature: %.2fÂ°C ---- Alerte niveau : %d (consÃ©cutives=%d) --- alarme en attente\n",
                m.date, m.temp, m.niv_alerte, compteur);
     }
     else {
-        printf("[%s] Temperature: %.2f°C --- Normal\n", m.date, m.temp);
+        printf("[%s] Temperature: %.2fÂ°C --- Normal\n", m.date, m.temp);
     }
 }
 //fonction qui ecrit un enregistrement dans le fichier journaling//
@@ -231,44 +231,17 @@ void traiter_alertes_urg(Pile *p ){
 		while (p->sommet){
 			i++;
         	mesure m = depiler(p);
-        	printf("\n [%s] %.2f°C alerte  numero %d doit etre traitee \n " ,m.date,m.temp,i);
+        	printf("\n [%s] %.2fÂ°C alerte  numero %d doit etre traitee \n " ,m.date,m.temp,i);
    		}
 	}
 }
 
-//fonction pour générer le nom de fichier avec la date//
+//fonction pour gÃ©nÃ©rer le nom de fichier avec la date//
 void nom_fichier_rapport(char *nom_fichier ) {
     char d[100];
     date(d);
     sprintf(nom_fichier, "rapport_%.10s.txt", d); // garde AAAA-MM-JJ
 }
-/*duree dalerte 
-char* durAlerte(File *f, int tempsPause){
-	int s=0;
-	Noeud *aux =f->tete;
-	while (aux !=NULL && aux->suiv != NULL){
-		if( aux->m.niv_alerte !=0){
-			s+=tempsPause;
-			if (aux->suiv->m.niv_alerte !=0){
-				s+=tempsPause;
-			}
-		}
-		aux=aux->suiv;	
-	}
-	if (s==0){
-		return("Pas d'alertes");
-	}else{
-	
-		int h,m,sec;
-		h=s/3600;
-		s %=3600;
-		m=s/60;
-		sec=s%60;
-		char *str=(char*)malloc(9 * sizeof(char));
-		sprintf(str,"la durée totale en etat d''alertes :  %02d:%02d:%02d", h,m,sec );
-		return (str  );
-	}
-}*/
 char* durAlerte(File *f, int tempsPause){
 	if (f->tete ==NULL){
     	return("Pas d'alertes");
@@ -293,8 +266,8 @@ char* durAlerte(File *f, int tempsPause){
 		s %=3600;
 		m=s/60;
 		sec=s%60;
-		char *str=(char*)malloc(9 * sizeof(char));
-		sprintf(str,"la durée totale en etat d''alertes :  %02d:%02d:%02d", h,m,sec );
+		char *str=(char*)malloc(50* sizeof(char));
+		sprintf(str,"la durÃ©e totale en etat d''alertes :  %02d:%02d:%02d", h,m,sec );
 		return (str  );
 	}
     
@@ -313,7 +286,6 @@ void generer_rapport_liste(File *f, arbre* A, int n, char *nom_fichier, int temp
     	fclose(fp);
 	}
 
-    
     int a1=0,a2=0,a3=0;
     Noeud *courant= f->tete;
     while (courant != NULL){
@@ -330,9 +302,9 @@ void generer_rapport_liste(File *f, arbre* A, int n, char *nom_fichier, int temp
     float moyenne = somme_val / n;
 
 
-    fprintf(fp, "Température minimale : %.2f°C\n", min_val);
-    fprintf(fp, "Température maximale : %.2f°C\n", max_val);
-    fprintf(fp, "Température moyenne : %.2f°C\n", moyenne);
+    fprintf(fp, "TempÃ©rature minimale : %.2fÂ°C\n", min_val);
+    fprintf(fp, "TempÃ©rature maximale : %.2fÂ°C\n", max_val);
+    fprintf(fp, "TempÃ©rature moyenne : %.2fÂ°C\n", moyenne);
     fprintf(fp,"Alertes : niv1=%d niv2=%d niv3=%d\n", a1,a2,a3);
     fprintf(fp,"%s", durAlerte(f , tempsPause) );
     fclose(fp);
@@ -379,7 +351,8 @@ int main(){
     printf("\n--- MESURES TRIEES PAR TEMPERATURE ---\n");
     inorder(triTemp);
     liberer(triTemp);
-    printf("\nProgramme terminé. Rapport généré (%d mesures).\n", i);
+    printf("\nProgramme terminÃ©. Rapport gÃ©nÃ©rÃ© (%d mesures).\n", i);
     return 0;
 }
+
 
