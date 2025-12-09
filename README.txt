@@ -26,10 +26,18 @@ Fonctionnalités principales :
 
 *Génération d’un rapport quotidien
   Rapport nommé automatiquement avec la date (ex. rapport_2025-12-07.txt).
-  Contient toutes les mesures du jour avec statistiques : température minimale, maximale, m          moyenne et nombre d’alertes par niveau.
+  Contient toutes les mesures du jour avec statistiques : température minimale, maximale, moyenne et nombre d’alertes par niveau.
 
-*Gestion des alertes critiques via une file (FIFO)
-  Ce fichier sert de journal urgent, séparé du rapport complet.Il permet à un utilisateur (ou un   futur système domotique) de consulter uniquement les événements graves, sans devoir lire tout    le rapport.
+*Tri et stockage des mesures
+  Insertion dans un arbre binaire par température pour tri automatique et accès rapide au min/max (parcours InOrder).
 
+*Statistiques automatiques
+  Calcul du minimum, maximum, moyenne et nombre d’alertes (niv1, niv2, niv3) à partir de l’arbre et du journal.
+
+*Gestion mémoire
+  L’arbre et les fichiers sont correctement libérés et fermés pour éviter les fuites.
+
+*Pile pour alertes critiques
+  Les mesures de niveau 3 sont stockées en LIFO pour notifier l’utilisateur et traiter urgemment les alertes.
 
 
