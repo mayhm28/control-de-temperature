@@ -3,22 +3,22 @@
 #include<time.h>
 #include <windows.h>
 // structure de mesures 
-typedef struct mesure {
+typedef struct mesure{
     float temp; // température mesurée
     char date[100]; // date et heure
     int niv_alerte; // 0 = normal, 1 = niv1, 2 = niv2, 3 = niv3
-} mesure;
+}mesure;
 //structure de la file
 typedef struct Noeud{
     mesure m;
     struct Noeud* suiv;
-} Noeud;
+}Noeud;
 typedef struct File{
     Noeud *tete;
     Noeud *queue;
-} File;
+}File;
 //structure de la pile
-typedef struct Pile {
+typedef struct Pile{
 	Noeud* sommet; 
 }Pile;
 // structure de l'arbre
@@ -26,7 +26,7 @@ typedef struct arbre{
 	mesure val;
 	struct arbre *gauche;
 	struct arbre *droite;
-} arbre;
+}arbre;
 //creation d'un noeud dans larbre
 arbre* nouv_arbre(mesure m){
 	arbre* nouvar=(arbre*)malloc(sizeof(arbre));
@@ -57,36 +57,36 @@ void inorder(arbre* racine){
 	inorder(racine->droite);
 }
 //recherche de la temp min
-arbre* mintemp(arbre* racine) {
+arbre* mintemp(arbre* racine){
     if (racine == NULL){
     	return NULL;
 	}
     arbre* temp = racine;
-    while (temp->gauche != NULL) {
+    while (temp->gauche != NULL){
         temp = temp->gauche;
     }
     return temp;
 }
 //recherche de la temp max
-arbre* maxtemp(arbre* racine) {
+arbre* maxtemp(arbre* racine){
     if (racine == NULL){
     	return NULL;
 	}
     arbre* temp = racine;
-    while (temp->droite != NULL) {
+    while (temp->droite != NULL){
         temp = temp->droite;
     }
     return temp;
 }
 //somme des valeurs dans larbre
-float somme(arbre* racine) {
+float somme(arbre* racine){
     if (racine == NULL){
     	return 0;
 	}
     return racine->val.temp+somme(racine->gauche)+somme(racine->droite);
 }
 //liberation de larbre
-void liberer(arbre* racine) {
+void liberer(arbre* racine){
     if (racine == NULL){
 	   return;
 	}
@@ -222,7 +222,7 @@ void traiter_alertes_urg(Pile *p ){
 	}
 }
 //fonction pour générer le nom de fichier rapport avec la date
-void nom_fichier_rapport(char *nom_fichier ) {
+void nom_fichier_rapport(char *nom_fichier ){
     char d[100];
     date(d);
     sprintf(nom_fichier, "rapport_%.10s.txt", d); // garde AAAA-MM-JJ
@@ -259,7 +259,7 @@ char* durAlerte(File *f, int tempsPause){
 void generer_rapport_liste(File *f, arbre* A, int n, char *nom_fichier, int tempsPause){
     FILE *fp = fopen(nom_fichier,"w");
 
-    if (!fp) {
+    if (!fp){
         printf("La creation du fichier %s est impossible\n", nom_fichier);
         return;
     }
@@ -336,6 +336,7 @@ int main(){
     printf("\nProgramme terminé. Rapport généré (%d mesures).\n", i);
     return 0;
 }
+
 
 
 
